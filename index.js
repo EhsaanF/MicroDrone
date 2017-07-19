@@ -127,7 +127,7 @@ Bot.on( 'document', ( ctx ) => {
         deleteIt( ctx.message );
 } );
 
-Bot.hears( [ /t.me/, /telegram.me/ ], ( ctx ) => {
+Bot.hears( [ /t\.me/, /telegram\.me/ ], ( ctx ) => {
     deleteIt( ctx.message );
 } );
 
