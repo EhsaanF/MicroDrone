@@ -1,0 +1,11 @@
+{
+  "name": "microdrone",
+  "version": "1.0.0",
+  "description": "Micro Drone, just a micro drone.",
+  "main": "index.js",
+  "author": "EhsaanF",
+  "license": "GPL",
+  "dependencies": {
+    "telegraf": "^3.8.2"
+  }
+}
