@@ -43,8 +43,8 @@ Bot.command( 'start', ( ctx ) => {
         deleteIt( ctx.message );
 } );
 
-Bot.hears( /\/gag(.*)/, ( ctx ) => {
-    if ( ! isAdmin( ctx.chat.id, ctx.from.id ) ) return deleteIt( ctx.message );
+Bot.hears( /\/gag(.*)/, async ( ctx ) => {
+    if ( ! await isAdmin( ctx.chat.id, ctx.from.id ) ) return deleteIt( ctx.message );
 
     var mins = +ctx.match[1].trim();
     if ( ! mins || mins < 0 || mins > 60 ) mins = 5;
@@ -52,7 +52,7 @@ Bot.hears( /\/gag(.*)/, ( ctx ) => {
     var target = ctx.message.reply_to_message;
     if ( ! target ) return deleteIt( ctx.message );
     if ( target.from.id == ctx.from.id ) return deleteIt( ctx.message );
-    if ( isAdmin( ctx.chat.id, target.from.id ) ) return deleteIt( ctx.message );
+    if ( await isAdmin( ctx.chat.id, target.from.id ) ) return deleteIt( ctx.message );
 
     var until = Math.floor( new Date() / 1000 ) + ( mins * 60 );
     Bot.telegram.restrictChatMember( ctx.chat.id, target.from.id, {
@@ -85,8 +85,8 @@ Bot.hears( 'لینک گروه', async ( ctx ) => {
     } 
 } );
 
-Bot.hears( /#موقت/, ( ctx ) => {
-    if ( ! isAdmin( ctx.chat.id, ctx.from.id ) ) return deleteIt( ctx.message );
+Bot.hears( /#موقت/, async ( ctx ) => {
+    if ( ! await isAdmin( ctx.chat.id, ctx.from.id ) ) return deleteIt( ctx.message );
 
     setTimeout( () => {
         deleteIt( ctx.message );
