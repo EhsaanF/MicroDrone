@@ -8,7 +8,7 @@ const deleteIt = ( msg ) => {
 
 const isAdmin = async ( chat, user ) => {
     try {
-        var status = await Bot.telegram.getChatMember( ctx.chat.id, ctx.from.id );
+        var status = await Bot.telegram.getChatMember( chat, user );
         if ( ! status ) return false;
         if ( status.status == 'creator' || status.status == 'administrator' ) return true;
         return false;
@@ -31,6 +31,10 @@ const buildName = ( from ) => {
     else
         return from.first_name;
 };
+
+Bot.telegram.getMe().then( ( profile ) => {
+    global.my_id = profile.id;
+} );
 
 Bot.command( 'start', ( ctx ) => {
     if ( ctx.chat.type == 'private' )
@@ -94,6 +98,7 @@ Bot.use( async ( ctx, next ) => {
     var chat_id = ctx.chat.id, user_id = ctx.from.id;
     try {
         if ( await isAdmin( chat_id, user_id ) ) return;
+        if ( user_id == my_id ) return;
         ctx.telegram.restrictChatMember( chat_id, user_id, {
             can_send_messages:                      true,
             can_send_media_messages:                true,
@@ -112,6 +117,7 @@ Bot.on( 'message', ( ctx, next ) => {
 
     deleteIt( ctx.message );
     for ( var member of new_members ) {
+        if ( member.id == my_id ) continue;
         if ( member.username && member.username.toLowerCase().substr( -3, 3 ) == 'bot' ) {
             ctx.telegram.kickChatMember( ctx.chat.id, member.id );
         }
