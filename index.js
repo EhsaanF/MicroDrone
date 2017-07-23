@@ -155,4 +155,9 @@ Bot.on( 'text', async ( ctx ) => {
     }
 } );
 
+Bot.on( 'message', ( ctx, next ) => {
+    if ( ctx.message.forward_from_chat && ctx.message.forward_from_message_id )
+        return deleteIt( ctx.message );
+} );
+
 Bot.startPolling();
