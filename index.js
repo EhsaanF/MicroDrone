@@ -43,6 +43,10 @@ Bot.command( 'start', ( ctx ) => {
         deleteIt( ctx.message );
 } );
 
+Bot.on( 'channel_post', ( ctx ) => {
+    ctx.leaveChat();
+} );
+
 Bot.hears( /\/gag(.*)/, async ( ctx ) => {
     if ( ! await isAdmin( ctx.chat.id, ctx.from.id ) ) return deleteIt( ctx.message );
 
@@ -144,7 +148,7 @@ Bot.on( 'text', async ( ctx ) => {
             var mentioned = ctx.message.text.substr( ent.offset, ent.length );
             try {
                 var chat = await ctx.telegram.getChat( mentioned );
-                if ( chat.type == 'channel' ) {
+                if ( chat && chat.type == 'channel' ) {
                     deleteIt( ctx.message );
                     break;
                 }
@@ -155,9 +159,53 @@ Bot.on( 'text', async ( ctx ) => {
     }
 } );
 
-Bot.on( 'message', ( ctx, next ) => {
+Bot.on( 'message', async ( ctx, next ) => {
     if ( ctx.message.forward_from_chat && ctx.message.forward_from_message_id )
         return deleteIt( ctx.message );
+
+    if ( ctx.message.caption ) {
+        var caption = ctx.message.caption;
+        if ( /t(?:elegram)?\.me/.test( caption ) ) return deleteIt( ctx.message );
+
+        var regex = /(@[A-Z]*[a-z]*[0-9]*[_]*)/g;
+        var usernames = caption.match( regex );
+        
+        for ( var username of usernames ) {
+            try {
+                var chat = await ctx.telegram.getChat( username );
+            } catch( e ) {
+                continue;
+            }
+
+            if ( chat && chat.type == 'channel' ) {
+                deleteIt( ctx.message );
+                break;
+            }
+        }
+    }
+} );
+
+Bot.on( 'edited_message', async ( ctx, next ) => {
+    var msg = ctx.update.edited_message,
+        text = msg.caption || msg.text || '';
+    
+    if ( /t(?:elegram)?\.me/.test( text ) ) return deleteIt( msg );
+
+    var regex = /(@[A-Z]*[a-z]*[0-9]*[_]*)/g;
+    var usernames = text.match( regex );
+    
+    for ( var username of usernames ) {
+        try {
+            var chat = await ctx.telegram.getChat( username );
+        } catch( e ) {
+            continue;
+        }
+
+        if ( chat && chat.type == 'channel' ) {
+            deleteIt( msg );
+            break;
+        }
+    }
 } );
 
 Bot.startPolling();
