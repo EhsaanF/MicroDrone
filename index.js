@@ -94,7 +94,7 @@ Bot.hears( /#موقت/, async ( ctx ) => {
 
     setTimeout( () => {
         deleteIt( ctx.message );
-    }, 10000 );
+    }, 30000 );
 } );
 
 // RESTRICT CONTENTS & USERS

@@ -4,6 +4,9 @@ Micro Drone, just a micro drone.
 A dead simple supergroup managment android, who is very smart, effecient and angry :joy:.
 
 ## Changelog
+#### 1.2.1 (2017/08/05)
+* __Tweak__: Increased `#موقت` timeout to 30 seconds.
+
 #### 1.2 (2017/07/25)
 * __Feature__: Detect channel usernames in media caption
 * __Feature__: Detect edited text messages and media
