@@ -1,5 +1,6 @@
 const Telegraf = require( 'telegraf' ),
       Token = process.env.BOT_TOKEN || '',
+      fs = require( 'fs' ),
       Bot = new Telegraf( Token );
 
 const deleteIt = ( msg ) => {
@@ -47,6 +48,61 @@ Bot.on( 'channel_post', ( ctx ) => {
     ctx.leaveChat();
 } );
 
+Bot.use( ( ctx, next ) => {
+    if ( ctx.chat.type == 'supergroup' ) {
+        let chats = require( './chats.json' );
+
+        if ( ! chats.chats[ ctx.chat.id ] )
+            chats.chats[ ctx.chat.id ] = ctx.chat;
+
+        chats = JSON.stringify( chats );
+        fs.writeFile( './chats.json', chats, 'utf-8', () => {} );
+    }
+    next();
+} );
+
+Bot.hears( '!flood', ( ctx ) => {
+    if ( ! ctx.message.reply_to_message )
+        return deleteIt( ctx.message );
+
+    ctx.reply( 'لطفا از پخش‌کردن پیام‌ها بپرهیزید و موضوع را در قالب یک پیام ارسال کنید. 🙂', {
+        reply_to_message_id:        ctx.message.reply_to_message.message_id
+    } ).then( ( sent ) => {
+        setTimeout( () => {
+            deleteIt( sent );
+            deleteIt( ctx.message ); 
+        }, 10000 );
+    } );
+} );
+
+Bot.hears( '!smart', ( ctx ) => {
+    if ( ! ctx.message.reply_to_message )
+        deleteIt( ctx.message );
+
+    ctx.replyWithHTML( 'لطفا پیش از پرسش سوال، مقاله‌ی <a href="https://wiki.ubuntu.ir/wiki/Smart_Questions">چگونه هوشمندانه سوال کنیم</a> را مطالعه کنید. 🙂', {
+        reply_to_message_id:        ctx.message.reply_to_message.message_id
+    } ).then( ( sent ) => {
+        setTimeout( () => {
+            deleteIt( sent );
+            deleteIt( ctx.message ); 
+        }, 10000 );
+    } );
+} );
+
+Bot.hears( '!ask', ( ctx ) => {
+    if ( ! ctx.message.reply_to_message )
+        deleteIt( ctx.message );
+
+    ctx.reply( 'لطفا از پرسش سوالاتی از قبیل «کسی هست» یا «کسی با X کار کرده» بپرهیزید و مستقیما سوال خود را مطرح کنید. 🙂', {
+        reply_to_message_id:        ctx.message.reply_to_message.message_id
+    } ).then( ( sent ) => {
+        setTimeout( () => {
+            deleteIt( sent );
+            deleteIt( ctx.message ); 
+        }, 10000 );
+    } );
+} );
+
 Bot.hears( /\/gag(.*)/, async ( ctx ) => {
     if ( ! await isAdmin( ctx.chat.id, ctx.from.id ) ) return deleteIt( ctx.message );
 
@@ -82,7 +138,7 @@ Bot.hears( 'لینک گروه', async ( ctx ) => {
            setTimeout( () => {
                 deleteIt( sent );
                 deleteIt( ctx.message );
-           }, 10000 ); 
+           }, 30000 ); 
         } );
     } catch( e ) {
         //...
@@ -109,10 +165,10 @@ Bot.use( async ( ctx, next ) => {
             can_send_other_messages:                false,
             can_add_web_page_previews:              false
         } );
-        next();
     } catch( e ) {
         console.log( e );
     }
+    next();
 } );
 
 Bot.on( 'message', ( ctx, next ) => {

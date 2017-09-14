@@ -4,6 +4,11 @@ Micro Drone, just a micro drone.
 A dead simple supergroup managment android, who is very smart, effecient and angry :joy:.
 
 ## Changelog
+#### 1.3.0 (2017/09/14)
+* __Feature__: Added !ask, !smart and !flood commands.
+* __Feature__: Added saving chats
+* __Tweak__: Increased group link message timeout to 30 seconds.
+
 #### 1.2.1 (2017/08/05)
 * __Tweak__: Increased `#موقت` timeout to 30 seconds.
 
